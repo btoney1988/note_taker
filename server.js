@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(express.static("public"));
+app.use(express.static("/assets"));
 
 // Calling on the api and html route functions
 require("./routes/apiRoutes")(app);
