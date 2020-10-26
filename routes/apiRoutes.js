@@ -3,11 +3,14 @@ const fs = require("fs");
 const util = require("util");
 const writeFileAsync = util.promisify(fs.writeFile);
 
+// Export function
 module.exports = function (app) {
+  // Get notes function
   app.get("/api/notes", function (req, res) {
     res.json(noteContents);
   });
 
+  // Post notes function
   app.post("/api/notes", function (req, res) {
 
     let newNote = req.body;
@@ -16,8 +19,10 @@ module.exports = function (app) {
     let newId = lastId + 1;
     newNote["id"] = newId;
 
+    // Push new note contents into note contents
     noteContents.push(newNote);
 
+    // Rewrite file to include new notes
     writeFileAsync("./db/db.json", JSON.stringify(noteContents)).then(function () {
       console.log("noteContents.json has been updated!");
     });
@@ -25,16 +30,15 @@ module.exports = function (app) {
     res.json(newNote);
   });
 
-
+  // Delet function
   app.delete("/api/notes/:id", function (req, res) {
 
-    console.log("Req.params:", req.params);
-    let chosenId = parseInt(req.params.id);
-    console.log(chosenId);
+    let deletedNote = parseInt(req.params.id);
 
-
+    // For loop running through the note content array
     for (let i = 0; i < noteContents.length; i++) {
-      if (chosenId === noteContents[i].id) {
+      // If deleted note id equals the chosen deleted note it will be deleted
+      if (deletedNote === noteContents[i].id) {
 
         noteContents.splice(i, 1);
 
