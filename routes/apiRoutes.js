@@ -1,26 +1,50 @@
-const noteText = require("../db/noteContents");
+const noteContents = require("../db/db.js");
+const fs = require("fs");
+const util = require("util");
+const writeFileAsync = util.promisify(fs.writeFile);
 
 module.exports = function (app) {
   app.get("/api/notes", function (req, res) {
-    res.json(noteText);
+    res.json(noteContents);
   });
 
-  app.post("/api/notes"), function (req, res) {
-    noteText.push(req.body);
-    res.json("saved");
-  };
+  app.post("/api/notes", function (req, res) {
 
-  app.delete("/api/notes/:index", function (req, res) {
-    const dlt = parseInt(req.params.index);
-    const tempNotes = [];
+    let newNote = req.body;
 
-    for (let i = 0; i < noteText.length; i++) {
-      if (i !== dlt) {
-        tempNotes.push(noteText[i]);
+    let lastId = noteContents[noteContents.length - 1]["id"];
+    let newId = lastId + 1;
+    newNote["id"] = newId;
+
+    noteContents.push(newNote);
+
+    writeFileAsync("./db/db.json", JSON.stringify(noteContents)).then(function () {
+      console.log("noteContents.json has been updated!");
+    });
+
+    res.json(newNote);
+  });
+
+
+  app.delete("/api/notes/:id", function (req, res) {
+
+    console.log("Req.params:", req.params);
+    let chosenId = parseInt(req.params.id);
+    console.log(chosenId);
+
+
+    for (let i = 0; i < noteContents.length; i++) {
+      if (chosenId === noteContents[i].id) {
+
+        noteContents.splice(i, 1);
+
+        let noteJSON = JSON.stringify(noteContents, null, 2);
+
+        writeFileAsync("./db/db.json", noteJSON).then(function () {
+          console.log("Chosen note has been deleted!");
+        });
       }
     }
-    noteText = tempNotes;
-
-    res.json("Delete Successful");
+    res.json(noteContents);
   });
 }

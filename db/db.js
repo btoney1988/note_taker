@@ -1,4 +1,4 @@
-var noteContents = [
+let noteContents = [
   {
     "title": "Test Title 1",
     "text": "Test text",
