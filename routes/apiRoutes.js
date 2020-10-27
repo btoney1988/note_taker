@@ -33,7 +33,7 @@ module.exports = function (app) {
   // Delet function
   app.delete("/api/notes/:id", function (req, res) {
 
-    let deletedNote = parseInt(req.params.id);
+    const deletedNote = parseInt(req.params.id);
 
     // For loop running through the note content array
     for (let i = 0; i < noteContents.length; i++) {
@@ -42,7 +42,7 @@ module.exports = function (app) {
 
         noteContents.splice(i, 1);
 
-        let noteJSON = JSON.stringify(noteContents, null, 2);
+        const noteJSON = JSON.stringify(noteContents, null, 2);
 
         writeFileAsync("./db/db.json", noteJSON).then(function () {
           console.log("Chosen note has been deleted!");
